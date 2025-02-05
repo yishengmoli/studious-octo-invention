@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>建模作品集</title>
+    <style>
+        /* 样式部分保持不变 */
+        :root {
+            --neon-blue: #64ffda;
+            --light-blue: #80dfff;
+            --dark-bg: #0a192f;
+            --text-light: #ccd6f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--dark-bg);
+            color: var(--text-light);
+        }
+
+        /* 导航栏 */
+        nav {
+            background: rgba(10, 25, 47, 0.95);
+            padding: 1.5rem 5%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 3rem;
+            justify-content: center;
+        }
+
+        nav a {
+            font-size: 1.8rem;
+            color: var(--text-light);
+            text-decoration: none;
+            padding: 0.5rem 1.5rem;
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+
+        nav a:hover {
+            color: var(--neon-blue);
+            border-color: var(--neon-blue);
+        }
+
+        /* 轮播背景 */
+        .hero-section {
+            position: relative;
+            margin-top: 100px;
+            height: 500px;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            filter: brightness(0.4);
+            animation: moveBg 20s linear infinite;
+        }
+
+        .hero-bg img {
+            height: 100%;
+            width: 100%;
+            flex-shrink: 0;
+            object-fit: cover;
+            opacity: 0;
+            animation: fadeInOut 20s linear infinite;
+            cursor: default; /* 禁止鼠标变为手型 */
+        }
+
+        @keyframes moveBg {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% {
+                opacity: 0;
+            }
+            10%, 90% {
+                opacity: 1;
+            }
+        }
+
+        /* 标题 */
+        .hero-text {
+            position: relative;
+            z-index: 10;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: transform 0.3s, text-shadow 0.3s;
+        }
+
+        .hero-text h1 {
+            font-size: 4.5rem;
+            font-weight: bold;
+            color: var(--neon-blue);
+            text-shadow: 0 0 15px rgba(100, 255, 218, 0.7);
+            transition: text-shadow 0.3s;
+        }
+
+        .hero-text p {
+            font-size: 2.5rem;
+            color: var(--light-blue);
+            text-shadow: 0 0 10px rgba(128, 223, 255, 0.5);
+            transition: text-shadow 0.3s;
+        }
+
+        .hero-text:hover {
+            transform: translateY(-55%);
+        }
+
+        .hero-text:hover h1 {
+            text-shadow: 0 0 30px rgba(100, 255, 218, 1);
+        }
+
+        .hero-text:hover p {
+            text-shadow: 0 0 20px rgba(128, 223, 255, 1);
+        }
+
+        /* 项目展示 */
+        .projects-section {
+            padding: 6rem 5%;
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3rem;
+        }
+
+        .project-card {
+            background: rgba(100, 255, 218, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(100, 255, 218, 0.5);
+        }
+
+        .project-image {
+            height: 280px;
+            cursor: zoom-in;
+        }
+        .project-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: zoom-in;
+        }
+        .project-info {
+            padding: 2rem;
+        }
+        .project-info h3 {
+            color: var(--neon-blue);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+        .project-description {
+            padding: 2rem;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: rgba(204, 214, 246, 0.9);
+            border-top: 1px solid rgba(100, 255, 218, 0.1);
+            background: rgba(100, 255, 218, 0.03);
+        }
+        /* 图片放大 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+        }
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 90%;
+            max-height: 90%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .modal-close {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            color: white;
+            font-size: 3rem;
+            cursor: pointer;
+            aria-label: "关闭图片";
+            z-index: 10;
+        }
+
+        /* 图片切换按钮 */
+        .prev,
+        .next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 3rem;
+            color: white;
+            cursor: pointer;
+            padding: 1rem 2rem;
+            user-select: none;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+        }
+
+        .prev {
+            left: 1rem;
+        }
+
+        .next {
+            right: 1rem;
+        }
+
+        #modalImageContainer {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        #modalImage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 100%;
+            max-height: 100%;
+            opacity: 1;
+            box-shadow: 0 0 20px 10px rgba(100, 255, 218, 0.7);
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .background-image {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 100%;
+            max-height: 100%;
+            opacity: 0.3;
+            z-index: 1;
+        }
+
+        /* 向左滑动的动画 */
+        @keyframes slideInLeft {
+            from {
+                opacity: 0.3;
+                transform: translate(100%, -50%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        /* 向右滑动的动画 */
+        @keyframes slideInRight {
+            from {
+                opacity: 0.3;
+                transform: translate(-200%, -50%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        .slide-left {
+            animation: slideInLeft 0.3s ease forwards;
+        }
+
+        .slide-right {
+            animation: slideInRight 0.3s ease forwards;
+        }
+
+        .fade-out {
+            animation: fadeOut 0.3s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+            to {
+                opacity: 0.3;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            nav ul {
+                gap: 1rem;
+            }
+            nav a {
+                font-size: 1.2rem;
+                padding: 0.5rem 1rem;
+            }
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 联系信息区域样式 */
+        .contact-section {
+            padding: 6rem 5%;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            margin: 6rem 5%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            filter: brightness(0.4);
+            animation: moveBg 20s linear infinite;
+        }
+
+        .contact-bg img {
+            height: 100%;
+            width: 100%;
+            flex-shrink: 0;
+            object-fit: cover;
+            opacity: 0;
+            animation: fadeInOut 20s linear infinite;
+            cursor: default; /* 禁止鼠标变为手型 */
+        }
+
+        .contact-card {
+            background: rgba(3, 17, 46, 0.815);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            z-index: 1;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(100, 255, 218, 0.5);
+        }
+
+        .contact-info {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .contact-info p {
+            font-size: 1.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .contact-qr-code {
+            margin-top: 2rem;
+        }
+
+        .contact-qr-code img {
+            width: 200px;
+            height: 200px;
+            cursor: default; /* 禁止鼠标变为手型 */
+        }
+
+        /* 底部样式 */
+        .footer-section {
+            padding: 3rem 5%;
+            background: rgba(10, 25, 47, 0.95);
+            color: var(--text-light);
+            text-align: center;
+            box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 -12px 40px rgba(100, 255, 218, 0.5);
+        }
+
+        .footer-section p {
+            font-size: 1.2rem;
+            margin: 0.5rem 0;
+        }
+
+        .footer-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            filter: brightness(0.4);
+            animation: moveBg 20s linear infinite;
+        }
+
+        .footer-bg img {
+            height: 100%;
+            width: 100%;
+            flex-shrink: 0;
+            object-fit: cover;
+            opacity: 0;
+            animation: fadeInOut 20s linear infinite;
+            cursor: default; /* 禁止鼠标变为手型 */
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <ul>
+            <li><a href="#home">首页</a></li>
+            <li><a href="#projects">项目</a></li>
+            <li><a href="#contact">联系</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero-section" id="home">
+        <div class="hero-bg">
+            <img src="https://gitee.com/qi-zhenguo/portfolio-images/raw/master/窗帘轨道(1).jpg" alt="窗帘轨道1" oncontextmenu="event.preventDefault()">
+            <img src="https://gitee.com/qi-zhenguo/portfolio-images/raw/master/助眠床垫(1).jpg" alt="助眠床垫1" oncontextmenu="event.preventDefault()">
+            <img src="https://gitee.com/qi-zhenguo/portfolio-images/raw/master/简约书桌(1).jpg" alt="简约书桌1" oncontextmenu="event.preventDefault()">
+        </div>
+        <div class="hero-text">
+            <h1>建模作品集</h1>
+            <p>专业产品建模师 | Blender专家 | 专注细节呈现</p>
+        </div>
+    </section>
+
+    <section class="projects-section" id="projects">
+        <div class="project-grid" id="projectGrid"></div>
+    </section>
+
+    <section class="contact-section" id="contact">
+        <div class="contact-bg">
+            <img src="https://gitee.com/qi-zhenguo/portfolio-images/raw/master/圣诞水杯(1).jpg" alt="圣诞水杯1" oncontextmenu="event.preventDefault()">
+            <img src="https://gitee.com/qi-zhenguo/portfolio-images/raw/master/圣诞水杯(2).jpg" alt="圣诞水杯2" oncontextmenu="event.preventDefault()">
+            <img src="https://gitee.com/qi-zhenguo/portfolio-images/raw/master/圣诞水杯(3).jpg" alt="圣诞水杯3" oncontextmenu="event.preventDefault()">
+            <img src="https://gitee.com/qi-zhenguo/portfolio-images/raw/master/圣诞水杯(4).jpg" alt="圣诞水杯4" oncontextmenu="event.preventDefault()">
+        </div>
+        <div class="contact-card">
+            <div class="contact-info">
+                <p>手机：15942005040</p>
+                <p>邮箱：13926607@qq.com</p>
+            </div>
+            <div class="contact-qr-code">
+                <img src="https://gitee.com/qi-zhenguo/portfolio-images/raw/master/微信二维码.png" alt="微信二维码" oncontextmenu="event.preventDefault()">
+            </div>
+        </div>
+    </section>
+
+    <section class="footer-section">
+        <p>版权所有 © [2025] 齐迹产品建模工作室</p>
+    </section>
+    <div class="modal" id="imageModal">
+        <span class="modal-close" onclick="closeModal()" aria-label="关闭图片">&times;</span>
+        <span class="prev" onclick="prevImage()">&#10094;</span>
+        <span class="next" onclick="nextImage()">&#10095;</span>
+        <div id="modalImageContainer">
+            <img class="modal-content" id="modalImage">
+        </div>
+    </div>
+    <script>
+        let currentProjectIndex = 0;
+        let currentImageIndex = 0;
+        const projects = [
+            {
+                name: '窗帘轨道',
+                images: [
+                    'https://gitee.com/qi-zhenguo/portfolio-images/raw/master/窗帘轨道(1).jpg',
+                    'https://gitee.com/qi-zhenguo/portfolio-images/raw/master/窗帘轨道(2).jpg',
+                    'https://gitee.com/qi-zhenguo/portfolio-images/raw/master/窗帘轨道(3).jpg'
+                ],
+                description: '在这款窗帘轨道建模渲染项目中，我对各类窗帘轨道组件进行了精准的三维建模。从杆身的流畅线条到精致的杆头、底座，再到配套的滑轮和挂钩等小部件，均细致入微地塑造。通过设置合适的材质，模拟金属的光泽与质感，同时运用光影效果，凸显产品结构与细节，以高质量的渲染成果为窗帘轨道产品提供了逼真且具有吸引力的视觉呈现。'
+            },
+            {
+                name: '简约书桌',
+                images: [
+                    'https://gitee.com/qi-zhenguo/portfolio-images/raw/master/简约书桌(1).jpg',
+                    'https://gitee.com/qi-zhenguo/portfolio-images/raw/master/简约书桌(2).jpg',
+                    'https://gitee.com/qi-zhenguo/portfolio-images/raw/master/简约书桌(3).jpg'
+                ],
+                description: '此为简约书桌建模渲染项目。我精准构建书桌三维模型，注重线条与结构的简约美感。通过材质与灯光设置，凸显木质纹理与表面质感。多场景渲染展示书桌在卧室等空间的应用，为产品展示提供真实且具吸引力的视觉内容。'
+            },
+            {
+                name: '助眠床垫',
+                images: [
+                    'https://gitee.com/qi-zhenguo/portfolio-images/raw/master/助眠床垫(1).jpg',
+                    'https://gitee.com/qi-zhenguo/portfolio-images/raw/master/助眠床垫(2).jpg'
+                ],
+                description: '在助眠床垫建模渲染项目中，我凭借精湛的建模技术，细致还原床垫的柔软质感与绗缝纹理。同时，通过巧妙的场景搭建与渲染设置，营造出温馨舒适的卧室氛围。图中人物与床垫的互动，更生动地展现了床垫的使用情境，以逼真的视觉效果助力产品的宣传与推广。'
+            },
+            {
+                name: '圣诞水杯',
+                images: [
+                    'https://gitee.com/qi-zhenguo/portfolio-images/raw/master/圣诞水杯(1).jpg',
+                    'https://gitee.com/qi-zhenguo/portfolio-images/raw/master/圣诞水杯(2).jpg',
+                    'https://gitee.com/qi-zhenguo/portfolio-images/raw/master/圣诞水杯(3).jpg',
+                    'https://gitee.com/qi-zhenguo/portfolio-images/raw/master/圣诞水杯(4).jpg'
+                ],
+                description: '在圣诞水杯建模渲染项目中，我充分发挥建模与渲染专长。针对圣诞水杯独特的圣诞树造型与节日装饰图案，运用高精度建模技术，将杯身的轮廓、装饰细节等完美复刻。在渲染阶段，精心打造多组场景，从温馨的倒水使用场景到精致的静物展示，搭配丰富的圣诞元素，营造出浓厚的节日氛围。通过细腻的光影处理与材质表现，凸显水杯的质感与色彩，为产品在圣诞季的宣传推广提供了极具吸引力的视觉素材。'
+            },
+            {
+                name: '智能门锁',
+                images: [
+                    'https://gitee.com/qi-zhenguo/portfolio-images/raw/master/智能门锁(1).jpg',
+                    'https://gitee.com/qi-zhenguo/portfolio-images/raw/master/智能门锁(2).jpg'
+                ],
+                description: '在智能门锁建模渲染项目中，我运用专业技能精确塑造门锁的外观与结构。建模时注重细节，如把手的弧度、按键的布局等。渲染环节，通过独特的光影设置凸显金属质感与科技感。同时，结合实际使用场景进行渲染，全方位展示产品特性，为智能门锁的宣传提供高品质视觉支持。'
+            },
+            {
+                name: '儿童安全锁',
+                images: [
+                    'https://gitee.com/qi-zhenguo/portfolio-images/raw/master/儿童安全锁(1).jpg',
+                    'https://gitee.com/qi-zhenguo/portfolio-images/raw/master/儿童安全锁(2).jpg'
+                ],
+                description: '在儿童安全锁建模渲染项目中，我运用专业的建模技能，精准塑造安全锁的卡通外观与结构细节。从圆润的边角到趣味的造型元素，都进行了细致还原。通过渲染，展现出安全锁在实际使用场景中的效果，突出其色彩与质感，为产品的展示和推广提供了高质量的视觉内容。'
+            },
+        ];
+
+        const lazyLoadImages = () => {
+            const images = document.querySelectorAll('img[data-src]');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src;
+                        img.removeAttribute('data-src');
+                        observer.unobserve(img);
+                    }
+                });
+            }, { rootMargin: '0px' });
+            images.forEach((img) => observer.observe(img));
+        };
+
+        const preloadImages = () => {
+            const heroImages = document.querySelectorAll('.hero-bg img');
+            heroImages.forEach((img) => {
+                const tempImg = new Image();
+                tempImg.src = img.src;
+            });
+            projects.forEach((project) => {
+                const tempImg = new Image();
+                tempImg.src = project.images[0];
+            });
+        };
+
+        const createProjectCard = (index, name, images, description) => {
+            const card = document.createElement('div');
+            card.classList.add('project-card');
+            const imageDiv = document.createElement('div');
+            imageDiv.classList.add('project-image');
+            const img = document.createElement('img');
+            img.dataset.src = images[0]; // 使用 data-src 实现懒加载
+            img.alt = name;
+
+            // 禁止右键下载
+            img.addEventListener('contextmenu', (e) => e.preventDefault());
+
+            // 禁止手机端长按保存
+            img.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    const longPressTimer = setTimeout(() => {
+                        e.preventDefault();
+                    }, 500); // 长按 500ms 以上触发阻止默认行为
+
+                    const endHandler = () => {
+                        clearTimeout(longPressTimer);
+                        img.removeEventListener('touchend', endHandler);
+                    };
+
+                    img.addEventListener('touchend', endHandler);
+                }
+            });
+
+            // 点击图片打开模态框
+            img.addEventListener('click', () => openModal(index, 0));
+
+            imageDiv.appendChild(img);
+            card.appendChild(imageDiv);
+
+            const infoDiv = document.createElement('div');
+            infoDiv.classList.add('project-info');
+            const h3 = document.createElement('h3');
+            h3.textContent = name;
+            infoDiv.appendChild(h3);
+
+            const descDiv = document.createElement('div');
+            descDiv.classList.add('project-description');
+            descDiv.textContent = description;
+            infoDiv.appendChild(descDiv);
+
+            card.appendChild(infoDiv);
+            return card;
+        };
+
+        const openModal = (projectIndex, imageIndex) => {
+            currentProjectIndex = projectIndex;
+            currentImageIndex = imageIndex;
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            modal.style.display = "block";
+            modalImage.src = projects[currentProjectIndex].images[currentImageIndex];
+            updateBackgroundImages();
+        };
+
+        const updateBackgroundImages = () => {
+            const modalImageContainer = document.getElementById('modalImageContainer');
+            const existingBgImages = modalImageContainer.querySelectorAll('.background-image');
+            existingBgImages.forEach(img => img.remove()); // 清空旧的背景图片
+
+            projects[currentProjectIndex].images.forEach((imgSrc, index) => {
+                if (index !== currentImageIndex) {
+                    const bgImg = document.createElement('img');
+                    bgImg.src = imgSrc;
+                    bgImg.classList.add('background-image');
+                    modalImageContainer.appendChild(bgImg);
+                }
+            });
+        };
+
+        const prevImage = () => {
+            currentImageIndex = (currentImageIndex - 1 + projects[currentProjectIndex].images.length) % projects[currentProjectIndex].images.length;
+            updateModalImage('slide-right');
+        };
+
+        const nextImage = () => {
+            currentImageIndex = (currentImageIndex + 1) % projects[currentProjectIndex].images.length;
+            updateModalImage('slide-left');
+        };
+
+        const updateModalImage = (animationClass) => {
+            const modalImage = document.getElementById('modalImage');
+            modalImage.classList.add('fade-out');
+            requestAnimationFrame(() => {
+                modalImage.src = projects[currentProjectIndex].images[currentImageIndex];
+                modalImage.classList.remove('fade-out');
+                modalImage.classList.add(animationClass);
+                requestAnimationFrame(() => {
+                    setTimeout(() => {
+                        modalImage.classList.remove(animationClass);
+                        updateBackgroundImages();
+                    }, 300);
+                });
+            });
+        };
+
+        const closeModal = () => {
+            document.getElementById('imageModal').style.display = "none";
+        };
+
+        window.onload = () => {
+            // 生成项目卡片
+            const projectGrid = document.getElementById('projectGrid');
+            projects.forEach((project, index) => {
+                const card = createProjectCard(index, project.name, project.images, project.description);
+                projectGrid.appendChild(card);
+            });
+
+            // 绑定模态框滚动阻止
+            const modal = document.getElementById('imageModal');
+            modal.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+            });
+
+            // 点击图片事件委托
+            document.getElementById('projectGrid').addEventListener('click', (e) => {
+                if (e.target.tagName === 'IMG' && e.target.closest('.project-image')) {
+                    const card = e.target.closest('.project-card');
+                    const index = Array.from(card.parentElement.children).indexOf(card);
+                    openModal(index, 0);
+                }
+            });
+
+            // 初始化加载
+            lazyLoadImages();
+            preloadImages();
+        };
+    </script>
+</body>
+</html>
